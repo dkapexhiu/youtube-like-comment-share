@@ -2,7 +2,7 @@
 <script src="bootstrap.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="https://apis.google.com/js/api.js"></script>
-<script async src="https://static.addtoany.com/menu/page.js"></script>
+<script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=5e6f72dec4717a00120d07a5&product=inline-share-buttons&cms=sop' async='async'></script>
 
 <link rel="stylesheet" href="font-awesome/css/font-awesome.css">
 <link rel="stylesheet" href="bootstrap.css">
@@ -117,7 +117,7 @@
 				html += "<div class='row'><div class='col-md-12'><h3 class='text-right'><i class='fa fa-eye'></i> " + response.items[0].statistics.viewCount + " <i class='fa fa-thumbs-up'></i> " + response.items[0].statistics.likeCount + " <i class='fa fa-thumbs-down'></i> " + response.items[0].statistics.dislikeCount + "</h3></div></div>";
 				html += '<iframe id="player" type="text/html" width="640" height="390" src="https://www.youtube.com/embed/'+videoId+'?enablejsapi=1" frameborder="0"></iframe>';
 				html += "<div class='row'><div class='col-md-12'><pre>" + response.items[0].snippet.description + "</pre></div></div>";
-				html += '<div class="a2a_kit a2a_kit_size_32 a2a_default_style"><a class="a2a_dd" href="https://www.addtoany.com/share"></a><a class="a2a_button_facebook"></a><a class="a2a_button_linkedin"></a><a class="a2a_button_whatsapp"></a><a class="a2a_button_twitter"></a></div>';
+				html += '<div class="sharethis-inline-share-buttons"></div>';
 
 				$("#video-detail").html(html);
 
