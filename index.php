@@ -48,7 +48,6 @@
 	            <div class="panel panel-info">
 	                <div class="panel-heading">
 	                    <h2>Comments</h2>
-						<div class="sharethis-inline-share-buttons"></div>
 	                </div>
 
        				<span id="status"></span>
@@ -118,7 +117,7 @@
 				html += "<div class='row'><div class='col-md-12'><h3 class='text-right'><i class='fa fa-eye'></i> " + response.items[0].statistics.viewCount + " <i class='fa fa-thumbs-up'></i> " + response.items[0].statistics.likeCount + " <i class='fa fa-thumbs-down'></i> " + response.items[0].statistics.dislikeCount + "</h3></div></div>";
 				html += '<iframe id="player" type="text/html" width="640" height="390" src="https://www.youtube.com/embed/'+videoId+'?enablejsapi=1" frameborder="0"></iframe>';
 				html += "<div class='row'><div class='col-md-12'><pre>" + response.items[0].snippet.description + "</pre></div></div>";
-				html += '';
+				html += '<div class="sharethis-inline-share-buttons"></div>';
 
 				$("#video-detail").html(html);
 
