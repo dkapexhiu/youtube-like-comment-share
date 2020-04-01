@@ -2,10 +2,12 @@
 <script src="bootstrap.js"></script>
 <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 <script src="https://apis.google.com/js/api.js"></script>
-<script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=5e6f72dec4717a00120d07a5&product=inline-share-buttons&cms=sop' async='async'></script>
 
 <link rel="stylesheet" href="font-awesome/css/font-awesome.css">
 <link rel="stylesheet" href="bootstrap.css">
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v6.0&appId=297547070901697"></script>
 
 <style>
 	body {
@@ -14,6 +16,8 @@
 	#videos {
 		margin-top: 50px;
 		margin-bottom: 50px;
+		display: grid;
+    	grid-template-columns: repeat(3, 1fr);
 	}
 	.fa-thumbs-up,
 	.fa-thumbs-down {
@@ -25,6 +29,11 @@
 	}
 	.media-body {
 		margin-left: 10px;
+	}
+	#btns{display:grid;}
+	button, select, input {
+    	width: fit-content;
+		margin: 10px;
 	}
 </style>
 
@@ -48,7 +57,6 @@
 	            <div class="panel panel-info">
 	                <div class="panel-heading">
 	                    <h2>Comments</h2>
-						<div class="sharethis-inline-share-buttons"></div>
 	                </div>
 
        				<span id="status"></span>
@@ -68,9 +76,9 @@
 </div>
 
 <script>
-	var key = "AIzaSyAffMrTTz2qRAqridgI9eWGfWJ0E4J6LYg";
+	var key = "";
 	var channelId = "UCh3QGrDc0Y4eUef3Rt2r7ZA";
-	var url = "https://www.googleapis.com/youtube/v3/search?key=" + key + "&channelId=" + channelId + "&part=snippet,id&maxResults=50";
+	var url = "https://www.googleapis.com/youtube/v3/search?key=" + key + "&channelId=" + channelId + "&part=snippet,id&maxResults=9";
 
 	var access_token= ''; 
 	// After the API loads, call a function to enable the video rating
@@ -112,10 +120,11 @@
 			url: url,
 			method: "GET",
 			success: function (response) {
-				console.log(response);
+				//console.log(response);
+
 				var html = "";
 				html += "<div class='row'><div class='col-md-12'><h1>" + response.items[0].snippet.title + "</h1></div></div>";
-				html += "<div class='row'><div class='col-md-12'><h3 class='text-right'><i class='fa fa-eye'></i> " + response.items[0].statistics.viewCount + " <i class='fa fa-thumbs-up'></i> " + response.items[0].statistics.likeCount + " <i class='fa fa-thumbs-down'></i> " + response.items[0].statistics.dislikeCount + "</h3></div></div>";
+				html += "<div class='row'><div class='col-md-12'><h3 class='text-left'><i class='fa fa-eye'></i> " + response.items[0].statistics.viewCount + " <i class='fa fa-thumbs-up'></i> " + response.items[0].statistics.likeCount + " <i class='fa fa-thumbs-down'></i> " + response.items[0].statistics.dislikeCount + "</h3></div></div>";
 				html += '<iframe id="player" type="text/html" width="640" height="390" src="https://www.youtube.com/embed/'+videoId+'?enablejsapi=1" frameborder="0"></iframe>';
 				html += "<div class='row'><div class='col-md-12'><pre>" + response.items[0].snippet.description + "</pre></div></div>";
 
@@ -127,17 +136,19 @@
 	}
 
 	function getComments(videoId) {
-		var url = "https://www.googleapis.com/youtube/v3/commentThreads?key=" + key + "&part=snippet&videoId=" + videoId + "&maxResults=50";
+		var url = "https://www.googleapis.com/youtube/v3/commentThreads?key=" + key + "&part=snippet&videoId=" + videoId + "&maxResults=5&order=time";
 
 		$.ajax({
 			url: url,
 			method: "GET",
 			success: function (response) {
-				var html = "";	
+				var html = '<div id="btns">';	
+				
+				html += '<div style="display:block;"><input type="text" value="" name="comment" id="comment" placeholder="Insert your comment here..."><input type="button" id="btnComment" comment-id="'+videoId+'" Value="Post Comment to YouTube" onclick="authenticate().then(loadClient).then(execute)"></div>';
+                html += '<button id="btnLike" like-id="'+videoId+'" onclick="authenticate().then(loadClient).then(executeRate)">Like Video on YouTube</button>'
+				html += '<div class="fb-share-button" data-href="https://www.youtube.com/watch?v="'+videoId+'" data-layout="button" data-size="small"><a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D'+videoId+'&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore"><button>Share on Facebook</button></a></div>';
 
-				html += '<button onclick="authenticate().then(loadClient)">Login</button>'
-				html += '<input type="text" value="" name="comment" id="comment"><input type="button" Value="Post" onclick="execute(this)">';
-                html += '<button onclick="executeRate(this);">Like</button>'
+				html += '</div>';
 
 				for (var a = 0; a < response.items.length; a++) {
 					var commenterName = response.items[a].snippet.topLevelComment.snippet.authorDisplayName;
@@ -189,7 +200,8 @@
   }
   // Make sure the client is loaded and sign-in is complete before calling this method.
   function execute(self) {
-	var videoId = $("#link").attr("comment-id");
+	var videoId = $("#btnComment").attr("comment-id");
+	//console.log("videoId: "+videoId);
 	var comment = $('#comment').val();
     return gapi.client.youtube.commentThreads.insert({
       "part": "snippet",
@@ -210,10 +222,9 @@
         function(err) { console.error("Execute error", err); });
   }
 
-  // Make sure the client is loaded and sign-in is complete before calling this method.
   function executeRate(self) {
-	var videoId = $("#link").attr("comment-id");
-	var comment = $('#comment').val();
+	var videoId = $("#btnLike").attr("like-id");
+	//console.log("videoId from likebtn: "+videoId);
     return gapi.client.youtube.videos.rate({
       "id": videoId,
       "rating": "like"
@@ -225,10 +236,10 @@
     function(err) { console.error("Execute error", err); });
   }
 
+
   gapi.load("client:auth2", function() {
     gapi.auth2.init({client_id: "858116069923-lk7vcdnejiahs7hnic82dp2a4f8c0jqb.apps.googleusercontent.com"});
   });
 
 </script>
-
 
